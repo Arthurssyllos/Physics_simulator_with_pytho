@@ -17,7 +17,7 @@ LIMITE_CEU_COR = (0, 0, 255)  # Cor azul para o limite do céu
 # Parâmetros do objeto
 posicao = [largura_tela // 2, 50]
 velocidade = [0, 0]
-aceleracao = [0, 0.1]
+aceleracao = [0, 0.2]  # Aumentando a componente vertical da aceleração
 resistencia_ar = 0.02  # Adicionando resistência do ar
 amortecimento = 0.9  # Fator de amortecimento
 
@@ -44,12 +44,16 @@ def handle_mouse_events():
 def handle_mouse_down(evento):
     global clicando_no_objeto
     # Verifica se o clique do mouse ocorreu sobre o objeto
-    if posicao[0] - RAIO_OBJETO <= evento.pos[0] <= posicao[0] + RAIO_OBJETO and \
-       posicao[1] - RAIO_OBJETO <= evento.pos[1] <= posicao[1] + RAIO_OBJETO:
+    distancia = pygame.math.Vector2(evento.pos[0] - posicao[0], evento.pos[1] - posicao[1]).length()
+    if distancia <= RAIO_OBJETO:
         clicando_no_objeto = True
 
 def handle_mouse_up():
     global clicando_no_objeto
+    if clicando_no_objeto:
+        # Adiciona uma velocidade inicial ao soltar o objeto
+        velocidade[0] = (pygame.mouse.get_pos()[0] - posicao[0]) / 10
+        velocidade[1] = (pygame.mouse.get_pos()[1] - posicao[1]) / 10
     clicando_no_objeto = False
 
 def update_position():
@@ -63,9 +67,6 @@ def update_position():
     velocidade[1] *= (1 - resistencia_ar)
 
     posicao[0] += velocidade[0]
-    posicao[1] += velocidade[1]
-
-    # Lançamento vertical simples
     posicao[1] += velocidade[1]
 
     # Verificar colisões com chão e bordas da tela
@@ -118,8 +119,6 @@ while True:
     if clicando_no_objeto and pygame.mouse.get_pressed()[0]:
         # Calcular a diferença entre a posição do cursor e a posição atual do objeto
         diff_x, diff_y = pygame.mouse.get_pos()[0] - posicao[0], pygame.mouse.get_pos()[1] - posicao[1]
-        # Definir a velocidade horizontal com base na diferença horizontal
-        velocidade[0] = diff_x / 10  # Ajuste conforme necessário
         # Atualizar a posição do objeto com a diferença
         posicao[0] += diff_x
         posicao[1] += diff_y
