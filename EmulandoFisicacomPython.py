@@ -65,6 +65,12 @@ def update_position():
     posicao[0] += velocidade[0]
     posicao[1] += velocidade[1]
 
+    # Lançamento vertical simples
+    posicao[1] += velocidade[1]
+
+    # Verificar colisões com chão e bordas da tela
+    check_collisions()
+
 def check_collisions():
     global posicao, velocidade
     # Verificar colisões com chão e bordas da tela
@@ -112,12 +118,13 @@ while True:
     if clicando_no_objeto and pygame.mouse.get_pressed()[0]:
         # Calcular a diferença entre a posição do cursor e a posição atual do objeto
         diff_x, diff_y = pygame.mouse.get_pos()[0] - posicao[0], pygame.mouse.get_pos()[1] - posicao[1]
+        # Definir a velocidade horizontal com base na diferença horizontal
+        velocidade[0] = diff_x / 10  # Ajuste conforme necessário
         # Atualizar a posição do objeto com a diferença
         posicao[0] += diff_x
         posicao[1] += diff_y
 
     update_position()
-    check_collisions()
     draw_on_screen()
 
     pygame.time.Clock().tick(60)
